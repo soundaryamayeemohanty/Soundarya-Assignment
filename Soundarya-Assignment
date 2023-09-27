@@ -1,0 +1,82 @@
+Assignment 1
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+import java.util.List;
+
+public class WebAutomation {
+    public static void main(String[] args) throws InterruptedException {
+        System.setProperty("webdriver.chrome.driver", "/path/to/chromedriver");
+        WebDriver driver = new ChromeDriver();
+        driver.get("https://basecopy5.staging.pg-test.com/hub/newhub503949860203/career-paths/career/database-architects");
+        WebElement jobElement = driver.findElement(By.xpath("//a[contains(@class, 'job-link')]"));
+        jobElement.click();
+        WebElement messageButton = driver.findElement(By.xpath("//button[contains(@class, 'message-button')]"));
+        messageButton.click();
+        Thread.sleep(5000);
+        driver.get("https://basecopy5.staging.pg-test.com/inbox");
+        driver.get("https://basecopy5.staging.pg-test.com/user2-profile-url");
+        List<WebElement> similarUsers = driver.findElements(By.xpath("//div[@class='similar-user']"));
+        for (WebElement similarUser : similarUsers) {
+            String userName = similarUser.findElement(By.className("user-name")).getText();
+            String companyName = similarUser.findElement(By.className("company-name")).getText();
+            System.out.println("User Name: " + userName);
+            System.out.println("Company Name: " + companyName);
+        }
+        driver.quit();
+    }
+}
+
+
+
+Assignment 2
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+public class WebAutomation {
+    public static void main(String[] args) {
+        System.setProperty("webdriver.chrome.driver", "/path/to/chromedriver");
+        WebDriver driver = new ChromeDriver();
+        driver.get("https://basecopy5.staging.pg-test.com/hub/newhub503949860203/home-v3");
+        List<WebElement> careerPathElements = driver.findElements(By.xpath("//div[@class='inspiration-item']"));
+        List<String> careerPathNames = new ArrayList<>();
+        
+        for (int i = 0; i < 3; i++) {
+            WebElement careerPath = careerPathElements.get(i);
+            careerPath.click();
+            careerPathNames.add(careerPath.getText());
+            driver.navigate().back();
+        }
+        WebElement option3 = driver.findElement(By.xpath("//input[@value='Option 3']"));
+        if (!option3.isSelected()) {
+            option3.click();
+        }
+        driver.navigate().to("https://basecopy5.staging.pg-test.com/hub/newhub503949860203/home-v3");
+        driver.navigate().refresh();
+        Collections.reverse(careerPathNames);
+        List<WebElement> recentlyViewedPaths = driver.findElements(By.xpath("//div[@class='recently-viewed-item']"));
+        boolean isReversed = true;
+        for (int i = 0; i < 3; i++) {
+            if (!recentlyViewedPaths.get(i).getText().equals(careerPathNames.get(i))) {
+                isReversed = false;
+                break;
+            }
+        }
+
+        if (isReversed) {
+            System.out.println("Recently viewed careers list is reversed as expected.");
+        } else {
+            System.out.println("Recently viewed careers list is not reversed.");
+        }
+
+        driver.quit();
+    }
+}
